@@ -50,7 +50,7 @@ var options = {
     uri: url,
     headers: {
         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
-        "Cookie": cookie
+        "Cookie": "sucuri_cloudproxy_uuid_20359d16b=b8673a4e36c7a54b32f2f81d61a7c9cc; bbsessionhash=8686e8908c9d423ec7d045ea555febf3; bblastvisit=1464302351; bblastactivity=0; bbuserid=491127; bbpassword=92224eb45fd2803c69b28ad0158303b0; sucuric_prtmpcb=1"
     }
 };
 

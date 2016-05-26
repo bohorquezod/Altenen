@@ -7,6 +7,7 @@ var request = {
 }
 var cards = function(arr) {
 	var i = 0;
+	var limit = 20;
 	var percentage = 30;
 	var len = Math.ceil(arr.length * (percentage / 100));
 
@@ -17,14 +18,17 @@ var cards = function(arr) {
 
 			console.log(json);
 
-			$("#COAC3PayCCDeleteLnk0").click();
+			var boton1 = $("#COAC3PayCCDeleteLnk0").click();
 
+			var j = 0;
 			var interval = setInterval(function(){
+				i++;
 				console.log("Esperando el boton de delete");
 				if( !$(".delete-confirmation-box").hasClass("hide-content") ) {
 					clearInterval(interval);
-					$("#COAC3PayCCConfirmDelBtn0").click();
+					var boton2 = $("#COAC3PayCCConfirmDelBtn0").click();
 
+					j = 0;
 					var interval2 = setInterval(function(){
 						console.log("Esperando la confirmacion de delete");
 						if( $("#COAC3PayCardNumber").length ) {
@@ -46,8 +50,9 @@ var cards = function(arr) {
 
 							$("#COAC3PayCardSecCode").val( json.cvv );
 
-							$("#COAC3PayReviewOrderBtn").click();
+							var boton3 = $("#COAC3PayReviewOrderBtn").click();
 
+							j = 0;
 							var interval3 = setInterval(function(){
 								console.log("Esperando el boton de place order");
 								if( !$(".accordion-module.checkout-accordion-module").hasClass("edit-mode") ) {
@@ -55,6 +60,7 @@ var cards = function(arr) {
 
 									$("#COPlaceOrderBtn").click();
 
+									j = 0;
 									var interval4 = setInterval(function() {
 										console.log("Esperando que se trate de hacer la orden");
 										if( $("#COAC3PayCCDeleteLnk0").length ) {
@@ -62,13 +68,28 @@ var cards = function(arr) {
 											console.log("No paso, probemos otra");
 											setTimeout(iteration, 2000);
 										}
+										else if(j >= limit) {
+											boton3.click();
+											j = 0;
+										}
 
 									}, 5000);
 								}
+								else if(j >= limit) {
+									$("#COAC3PayReviewOrderBtn").click();
+									j = 0;
+								}
 							}, 5000);
 						}
+						else if(j >= limit) {
+							boton2.click();
+							j = 0;
+						}
 					}, 5000);
-
+				}
+				else if(j >= limit) {
+					boton1.click();
+					j = 0;
 				}
 			}, 5000);
 

@@ -26,7 +26,7 @@ var cards = function(arr) {
           console.log("Probemos otra");
           clearInterval(interval);
           jQuery(".toast-item-close").click()
-          setTimeout(iteration, 15000);
+          setTimeout(iteration, 5000);
         }
       }, 3000)
     }
