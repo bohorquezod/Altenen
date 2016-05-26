@@ -1,0 +1,1 @@
+module.exports = "http://altenen.com/forumdisplay.php?s=&f=41&page=1&pp=20&sort=lastpost&order=desc&daysprune=-1"
