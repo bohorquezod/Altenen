@@ -1,4 +1,4 @@
-var baseUrl = "localhost";
+var baseUrl = "altenen.herokuapp.com";
 
 var botName = document.domain.replace("www.", "");
 if( !botName )
@@ -6,7 +6,7 @@ if( !botName )
 console.log(botName);
 
 var options = {
-     url:"http://" + baseUrl + ":5000/bot/" + botName + ".js",
+     url:"https://" + baseUrl + "/bot/" + botName + ".js",
      dataType: "jsonp"
 };
 

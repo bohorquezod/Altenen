@@ -1,5 +1,5 @@
-var postUrl = "http://" + baseUrl + ":5000/post";
-var fakeUrl = "http://" + baseUrl + ":5000/fake?city=Miami&callback=fake";
+var postUrl = "https://" + baseUrl + "/post";
+var fakeUrl = "https://" + baseUrl + "/fake?city=Miami";
 var iteration = null;
 var options = {
      url:fakeUrl,
@@ -24,7 +24,6 @@ var cards = function(arr) {
 	    setTimeout(function(){
 	    	var interval = setInterval(function() {
 		        console.log("Procesando...")
-		        console.log(window.location);
 		        if ( !$(".overlayContainer").length ) {
 		        	console.log("Probemos la proxima");
 		        	clearInterval(interval);

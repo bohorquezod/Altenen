@@ -1,4 +1,4 @@
-var url = "http://localhost:5000/post";
+var url = "https://" + baseUrl + "/post";
 var iteration = null;
 var jsonp_callback = function(arr) {
 	var i = 0;

@@ -1,5 +1,5 @@
-var postUrl = "http://" + baseUrl + ":5000/post";
-var fakeUrl = "http://" + baseUrl + ":5000/fake?city=Miami&callback=fake";
+var postUrl = "https://" + baseUrl + "/post";
+var fakeUrl = "https://" + baseUrl + "/fake?city=Miami";
 var iteration = null;
 var options = {
      url:fakeUrl,

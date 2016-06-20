@@ -1,0 +1,97 @@
+http://localhost:5000/bin?bin=46585934xxxxxx16&mon=03&year=18&cvv=&can=10
+
+// tiger direct
+http://localhost:5000/bin?bin=448559000292xxxx&mon=10&year=19&cvv=0
+
+// alipay y luego aliexpres
+http://localhost:5000/bin?bin=43661838458xxxxx&mon=03&year=20&cvv=020
+http://localhost:5000/bin?bin=4640182101xxxxxx&mon=0&year=0&cvv=0
+
+4485500024xxxxxx 10/19
+
+HMA
+gabo2016
+8612882j
+
+BIN APPLE
+426684133163xxxx 8/19 632
+4213644768168817
+425853xxxxxxxxxx
+
+BIN NETFLIX
+407361xxxxxxxxxx 05/19 618 IP UCRANIA
+
+Bin serio
+4500030118xxxxxx 05/18 254
+4500030118xxxx99 05/18 254
+450003011859xxxx 10/17 // new
+
+http://localhost:5000/bin?bin=450003011859xxxx&mon=10&year=17&cvv=0
+
+Bin amazon
+464018211104xxxx 7/18 197
+4465900922xxxxxx // new
+
+Bin lottcrate y Forever21 (Cancela)
+4342562247xxxxxx 12/19 937
+
+Crocs y Forever (Cancela)
+4050371100534201 12/17 850
+
+Crocs y Forever (Cancela)
+4050371109xxxxxx 07/17 850 IP USA
+
+Bin Bestbuy usa: 
+4037840060xxxxxx 03/17 187
+
+BIN Netflix: 4183760346xxxxxx
+Fecha: 11/17
+CVV: 254
+IP: Costa Rica
+Zip: 11204
+
+549833xxxxxxxxxx 6/20 158 Brazil
+
+
+51078200x4xx1xx5 11/18 639 Ip: USA
+51077820014xxxxx
+
+5113659213xxxxxx
+10001-10018-92011 IP USA
+
+4467440001xxxxxx 10/18 400 Ip: USA 32303
+
+5487190099xxxxxx 01/18 288 Ip: Switzerland
+
+4050371100804430
+
+
+BIN Redtube US: 4121383102xxxxxx
+Fecha: 10/17
+CVV: 360
+Codigo postal: 90274
+
+BIN Brazzers: 4266841xx9x8xx0x
+Fecha: 01/19
+CVV: 201
+IP: USA
+
+BIN RKcams:49317200301xxxxx
+Fecha:03/17
+CVV:867
+
+Foxsoccershop.com
+466806196038xxxx
+01/19
+422
+Ip usa
+
+4207670156xxxxxx 3/19 USA alliexpres																																		
+BIN:530405xxxxxxxxxx
+FECHAS Y CVV:02/20 cVv:298
+IP: Bulgaria
+
+Bin de godaddy.com
+5165
+
+GEARBEST 4060320348xxxx11 271

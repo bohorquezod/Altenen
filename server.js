@@ -2,14 +2,29 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var request = require("request");
 var cheerio = require("cheerio");
-var TempMail = require('tempmail.js');
+// var TempMail = require('tempmail');
 var token = require("token");
 var url = require("./url");
-var cookie = null;
-var cookieLog = null;
 var userAgent = null;
 var domains = [ '@leeching.net', '@extremail.ru', '@kismail.ru' ];
+
 var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+
+io.on('connection', function (socket) {
+    console.log("Conexion")
+    socket.on('shareCCServer', function (data) {
+        console.log(data);
+        socket.emit('shareCCAll', data);
+    });
+});
+
+var login = {
+    user: "jaxsoa",
+    pass: "23768014"
+};
 
 var mysql = require('promise-mysql');
 var conn;
@@ -26,23 +41,23 @@ mysql.createConnection({
 });
 
 token.defaults.secret = 'altenen';
-
+ 
 var selector = ".unread";
 
-var mail = new TempMail("database" + domains[ 0 ]);
-var mail = new TempMail("orlicito" + domains[ 0 ]);
+// var mail = new TempMail("database" + domains[ 0 ]);
+// var mail = new TempMail("orlicito" + domains[ 0 ]);
 // var mail = new TempMail();
 
-console.log( mail );
+// console.log( mail );
 
-app.set("port", 5000); //agregar el puerto
+app.set("port", process.env.PORT || 5000); //agregar el puerto
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ "extended": false }));
 
 app.use(express.static(__dirname + "/public"));
 
-app.listen(app.get("port"), function() { //Conexion con la base de datos
+server.listen(app.get("port"), function() { //Conexion con la base de datos
     console.log('Servidor iniciado en http://localhost:' + app.get("port"));
 });
 
@@ -50,23 +65,155 @@ var options = {
     uri: url,
     headers: {
         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
-        "Cookie": "sucuri_cloudproxy_uuid_20359d16b=b8673a4e36c7a54b32f2f81d61a7c9cc; bbsessionhash=8686e8908c9d423ec7d045ea555febf3; bblastvisit=1464302351; bblastactivity=0; bbuserid=491127; bbpassword=92224eb45fd2803c69b28ad0158303b0; sucuric_prtmpcb=1"
+        "Cookie": ""
     }
 };
 
+var getFirstCookie = function( user, pass, callback ) {
+
+    request(options,
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                $ = cheerio.load(body);
+                
+                var script = $("script");
+                var titleTag = $("title");
+
+                if( titleTag[0].children[0].data === "You are being redirected..." ) {
+                    var data = script[0].children[0].data;
+
+                    data = data.replace("e(r)", "r = r.replace('location.reload()'); r");
+
+                    var getCookie = eval(data).replace("document.cookie", "options.headers.Cookie");
+
+                    eval(getCookie)
+
+                    console.log(options.headers.Cookie);
+
+                    // Aqui ya podremos entrar a altenen
+                    callback( user, pass );
+                    
+
+                }
+                else
+                    res.send(body);
+
+            }
+            else {
+                console.log("error");
+                console.log(error);
+            }
+        }
+    );
+}
+
+var getSessionsCookie = function( user, pass ) {
+    request.post({
+        url: "http://altenen.com/login.php?do=login",
+        headers: options.headers,
+        form: {
+            vb_login_username: user,
+            cookieuser:"1",
+            vb_login_password: pass,
+            securitytoken:"guest",
+            do:"login"
+        }
+    },
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                
+                    var cookie = "";
+                    var arr = response.headers["set-cookie"];
+
+                    for( var i = 0; i < arr.length; i++ ) {
+                        cookie += arr[i].split(";")[0] + "; ";
+                    }
+
+                    console.log(options.headers.Cookie);
+
+                    options.headers.Cookie = options.headers.Cookie.split(";")[0] + "; " + cookie;
+
+                    console.log(options.headers.Cookie);
+            }
+            else {
+                console.log("error");
+                console.log(error);
+            }
+        }
+    );
+}
+
+var tdToCC = function( td ) {
+    console.log(td);
+    var cards = [];
+    for( var i = 0; i < td.length; i ++ ) {
+        var json = {};
+        json.title = title = td[i].attribs.title;
+
+        json.card = /[\d]{16}/.exec(title);
+
+        if( json.card ) {
+            json.card = json.card[0];
+            title = title.replace(json.card, "");
+        }
+
+        json.year = /20[1-2]\d/.exec(title);
+
+        if( json.year != null ) {
+            json.year = json.year[0];
+            title = title.replace(json.year, "");
+            json.year = json.year.replace("20", "");
+        }
+
+        json.cvv = /[\d]{3}/.exec(title);
+
+        if( json.cvv != null ) {
+            json.cvv = json.cvv[0];
+            title = title.replace(json.cvv, "");
+        }
+
+        json.mon = /[\d]{2}/.exec(title);
+
+        if( json.mon != null ) {
+            json.mon = json.mon[0];
+            title = title.replace(json.mon, "");
+        }
+
+        if( !json.year ) {
+            json.year = /[\d]{2}/.exec(title);
+
+            if( json.year != null ) {
+                json.year = json.year[0];
+                title = title.replace(json.year, "");
+            }
+        }
+
+        json.mon = json.mon;
+        json.year = json.year;
+
+        if( json.mon <= 0 || json.mon > 12 ) {
+            json.mon = null;
+        }
+
+        if( json.card && json.cvv && json.year && json.mon && i > -1)
+            cards.push(json);
+
+    }
+
+    return cards;
+}
+
 app.get("/atn", function (req, res) {
-    console.log("Peticion de /");
+    console.log("Peticion de /atn");
 
     request(options,
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 res.send(body)
-                console.log(response.cookie);
             }
             else {
                 console.log("error");
                 console.log(error);
-                res.send(error);
             }
         }
     );
@@ -86,74 +233,36 @@ app.get("/post", function (req, res) {
                 // --
 
                 var td = $(selector);
-                // console.log(td)
+                var titleTag = $("title");
                 var title = "";
                 var cards = [];
 
-                for( var i = 0; i < td.length; i ++ ) {
-                    var json = {};
-                    json.title = title = td[i].attribs.title;
+                if( titleTag[0].children[0].data === "You are being redirected..." ) {
+                    var script = $("script");
 
-                    json.card = /[\d]{16}/.exec(title);
+                    var data = script[0].children[0].data;
 
-                    if( json.card ) {
-                        json.card = json.card[0];
-                        title = title.replace(json.card, "");
-                    }
+                    data = data.replace("e(r)", "r = r.replace('location.reload()'); r");
 
-                    json.year = /20[1-2]\d/.exec(title);
+                    var getCookie = eval(data).replace("document.cookie", "options.headers.Cookie");
 
-                    if( json.year != null ) {
-                        json.year = json.year[0];
-                        title = title.replace(json.year, "");
-                        json.year = json.year.replace("20", "");
-                    }
+                    eval(getCookie)
 
-                    json.cvv = /[\d]{3}/.exec(title);
+                    console.log(options.headers.Cookie);
 
-                    if( json.cvv != null ) {
-                        json.cvv = json.cvv[0];
-                        title = title.replace(json.cvv, "");
-                    }
+                    // Aqui ya podremos entrar a altenen
 
-                    json.mon = /[\d]{2}/.exec(title);
-
-                    if( json.mon != null ) {
-                        json.mon = json.mon[0];
-                        title = title.replace(json.mon, "");
-                    }
-
-                    if( !json.year ) {
-                        json.year = /[\d]{2}/.exec(title);
-
-                        if( json.year != null ) {
-                            json.year = json.year[0];
-                            title = title.replace(json.year, "");
-                        }
-                    }
-
-                    json.mon = json.mon;
-                    json.year = json.year;
-
-                    if( json.mon <= 0 || json.mon > 12 ) {
-                        json.mon = null;
-                    }
-
-                    if( json.card && json.cvv && json.year && json.mon && i > -1)
-                        cards.push(json);
-
+                    // Tratamos de obtener las coockies de session
+                    getSessionsCookie( login.user, login.pass );
+                }
+                else {
+                    cards = tdToCC( td );
                 }
 
-                // --
-
-                // console.log(body);
-
-                // res.send(body);
-
-                // if( req.query.callback )
-                //     res.send(req.query.callback + "(" + JSON.stringify(cards) + ")");
-                // else
-                //     res.send(cards);
+                if( req.query.callback )
+                    res.send(req.query.callback + "(" + JSON.stringify(cards) + ")");
+                else
+                    res.send(cards);
 
             }
             else {
@@ -217,7 +326,7 @@ app.get("/bin", function(req, res) {
                 if( req.query.callback )
                     res.send(req.query.callback + "(" + JSON.stringify(arr) + ")");
                 else
-                    res.send(arr);
+                    res.send(``);
 
                 console.log(arr);
             }

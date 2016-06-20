@@ -1,5 +1,4 @@
-var baseUrl = "localhost";
-var url = "http://" + baseUrl + ":5000/post";
+var url = "https://" + baseUrl + "/post";
 var iteration = null;
 var request = {
      url: url,
