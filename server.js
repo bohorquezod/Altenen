@@ -65,7 +65,7 @@ var options = {
     uri: url,
     headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
-        "Cookie": "sucuri_cloudproxy_uuid_e2f48d467=5f71bb2d0bbe8857048f264aa78da52b; PHPSESSID=741a1bea55d2cabff649587e36fc7dad; bblastvisit=1466458137; bblastactivity=0; bbuserid=491127; bbpassword=639543dfb8b789dcb35a22effa21cf1e; bbsessionhash=1c665c90a7dd924573aff65bb430ad8b; bbthread_lastview=e0aeb60e494d25b93dc988b35abfebb2268b0305a-10-%7Bi-1099063_i-1466459666_i-1099067_i-1466459711_i-1099069_i-1466459740_i-1099074_i-1466459806_i-1099066_i-1466459855_i-1099076_i-1466460088_i-1099077_i-1466459974_i-1099084_i-1466460350_i-1099086_i-1466460358_i-1093250_i-1466460386_%7D"
+        "Cookie": ""
     }
 };
 
