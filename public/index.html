@@ -54,7 +54,7 @@
         var app = angular.module('Carduff', ['btford.socket-io']);
         app.factory('socket', function (socketFactory) {
             return socketFactory({
-                ioSocket: io.connect('http://altenen.herokuapp.com/')
+                ioSocket: io.connect('https://altenen.herokuapp.com/')
             });
         })
 
