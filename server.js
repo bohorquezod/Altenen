@@ -268,7 +268,6 @@ function getNewsCards() {
           }
         }
         else{
-          io.sockets.emit("renew", { cards: temp, status: "No hay nuevas"});
           console.log("No hay nuevas")
         }
         console.log("-----------------------------")
