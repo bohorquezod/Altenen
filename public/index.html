@@ -54,7 +54,6 @@
         var app = angular.module('Carduff', ['btford.socket-io']);
         app.factory('socket', function (socketFactory) {
             return socketFactory({
-                var ws = new WebSocket(HOST);
                 ioSocket: io.connect(location.origin.replace(/^http/, 'ws'))
             });
         })
