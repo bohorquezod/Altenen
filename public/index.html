@@ -1,83 +1,83 @@
-<!DOCTYPE html>
-<html ng-app="MyApp">
+<html>
+
 <head>
-	<meta charset="UTF-8">
-	<title>Atn App</title>
-
-	<!--Import Google Icon Font-->
-	<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<!--Import materialize.css-->
-	<link type="text/css" rel="stylesheet" href="/libs/css/materialize.css" media="screen,projection"/>
-
-	<!--Let browser know website is optimized for mobile-->
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-	<script src="/libs/js/jquery.js"></script>
-	<script src="/libs/js/materialize.js"></script>
-	<script src="/libs/js/angular.js"></script>
-	<script src="/libs/js/angular_materialize.js"></script>
-
-	<link rel="stylesheet" href="/css/main.css">
-
-	<script src="/app/init.js"></script>
-	<script src="/app/main.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+    <script src="socket.min.js"></script>
 </head>
-<body class="grey darken-3">
-	<nav>
-		<div class="nav-wrapper red darken-3">
-			<a href="/" class="left brand-logo">
-				<img src="/img/anonymous.png" alt="(Anonymous)" class="center-ver-img circle z-depth-4 black" width="75em" height="75em">
-			</a>
 
-			<a href="/" class="brand-logo">
-				ATN
-			</a>
+<body ng-app="Carduff">
+    <h1>Carduff</h1>
+    <div class="row" ng-controller="MainCtrl">
+        <div class="col m6">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Card</th>
+                        <th>M</th>
+                        <th>Y</th>
+                        <th>C</th>
+                    </tr>
+                </thead>
 
-			<a href="#" data-activates="mobile-demo" data-sidenav="right" data-menuwidth="200" data-closeonclick="true" class="button-collapse right">
-				<i class="material-icons">view_module</i>
-			</a>
-		    <ul class="right hide-on-med-and-down">
-				<li><a href="sass.html">Sass</a></li>
-				<li><a href="badges.html">Components</a></li>
-				<li><a href="collapsible.html">Javascript</a></li>
-				<li><a href="mobile.html">Mobile</a></li>
-		    </ul>
-		    <ul class="side-nav" id="mobile-demo">
-		        <li><a href="sass.html">Sass</a></li>
-		        <li><a href="badges.html">Components</a></li>
-		        <li><a href="collapsible.html">Javascript</a></li>
-		        <li><a href="mobile.html">Mobile</a></li>
-		    </ul>
-		</div>
-	</nav>
+                <tbody>
+                    <tr ng-repeat="card in cards.slice().reverse()">
+                        <td>{{card.card}}</td>
+                        <td>{{card.mon}}</td>
+                        <td>{{card.year}}</td>
+                        <td>{{card.cvv}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col m6">
+            <h6>Fullname</h6>
+            <h5>{{fake.fullname}}</h5>
+            <h6>City</h6>
+            <h5>{{fake.city}}</h5>
+            <h6>State</h6>
+            <h5>{{fake.state}}</h5>
+            <h6>Street</h6>
+            <h5>{{fake.street}}</h5>
+            <h6>ZIP</h6>
+            <h5>{{fake.zip}}</h5>
+            <h6>Gender</h6>
+            <h5>{{fake.gender}}</h5>
+            <h6>Phone</h6>
+            <h5>{{fake.phone}}</h5>
+        </div>
+    </div>
+    <script>
+        var app = angular.module('Carduff', ['btford.socket-io']);
+        app.factory('socket', function (socketFactory) {
+            return socketFactory({
+                ioSocket: io.connect('http://altenen.herokuapp.com/')
+            });
+        })
 
-	<div class="">
-		<img src="/img/altenen.gif" class="z-depth-4" alt="Altenen" width="100%" height="200em">
-	</div>
-
-	<div class="container">
-		<div class="card grey darken-4">
-			<form action="" class="card-content">
-				<div class="row">
-	        		<div class="input-field col s12">
-		          		<input id="username" type="text" class="validate text-white" placeholder="Username">
-		      			<label for="first_name" class="">Username</label>
-	        		</div>
-	      		</div>
-	      		<div class="row">
-	        		<div class="input-field col s12">
-	          			<input id="password" type="password" class="validate" placeholder="Password">
-	          			<label for="disabled">Password</label>
-	        		</div>
-	        	</div>
-	        	<div class="row">
-	        		<div class="">
-	        			<button class="btn col s12">Sign in</button>
-	        		</div>
-	        	</div>
-			</form>
-		</div>
-	</div>
-
+        app.controller('MainCtrl', ['$scope', 'socket', function ($scope, socket) {
+            $scope.cards = [];
+            socket.on("connect", function () {  
+                console.log("Connected");
+            });
+            socket.on("cards", function (res) {  
+                $scope.cards = res.cards
+                $scope.fake = res.fake
+                console.log("First Time");
+            
+            });
+            socket.on("renew", function (data) {
+                data.cards.map(card =>{
+                    $scope.cards.push(card)
+                })
+                console.log(data.cards)
+                console.log("News");
+            });
+        }]);
+    </script>
 </body>
+
 </html>

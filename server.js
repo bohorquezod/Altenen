@@ -10,17 +10,152 @@ var domains = [ '@leeching.net', '@extremail.ru', '@kismail.ru' ];
 
 var app = express();
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
+var io = require('socket.io')(server), Promise = require("bluebird"), CronJob = require('cron').CronJob;
 
+var cards = [];
+io.on("connect", newConnection);
+function newConnection(socket) {
+  getFake().then(function (fake) {
 
-io.on('connection', function (socket) {
-    console.log("Conexion")
-    socket.on('shareCCServer', function (data) {
-        console.log(data);
-        socket.emit('shareCCAll', data);
-    });
-});
+    request(options,
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                // res.send(body)
 
+                // Esto es lo que genera el json_callback([])
+                $ = cheerio.load(body); // Show the HTML for the Google homepage.
+                // --
+
+                var td = $(selector);
+                var titleTag = $("title");
+                var title = "";
+                var cards = [];
+
+                if( titleTag[0].children[0].data === "You are being redirected..." ) {
+                    var script = $("script");
+
+                    var data = script[0].children[0].data;
+
+                    data = data.replace("e(r)", "r = r.replace('location.reload()'); r");
+
+                    var getCookie = eval(data).replace("document.cookie", "options.headers.Cookie");
+
+                    eval(getCookie)
+
+                    console.log(options.headers.Cookie);
+
+                    // Aqui ya podremos entrar a altenen
+
+                    // Tratamos de obtener las coockies de session
+                    getSessionsCookie( login.user, login.pass );
+                }
+                else {
+                  socket.emit("cards", { cards: cards, fake: fake });
+                  new CronJob('*/5 * * * * *', function () {
+                      getNewsCards();
+                  }, null, true);
+                }
+
+            }
+            else {
+                console.log("error");
+                console.log(error);
+            }
+        }
+    );
+  })
+}
+function getFake() {
+    return new Promise(function (resolve, reject) {
+        request.post({
+            url: 'http://www.fakeaddressgenerator.com/World_Address/get_us_address'
+        }, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                var $ = cheerio.load(body);
+                var inputs = $(".no-style");
+                var fullname = inputs[0].attribs.value;
+                var fake = {
+                    "fullname": fullname,
+                    "gender": inputs[1].attribs.value,
+                    "title": inputs[2].attribs.value,
+                    "birthday": inputs[3].attribs.value,
+                    "ssn": inputs[4].attribs.value,
+                    "street": inputs[5].attribs.value,
+                    "city": inputs[6].attribs.value,
+                    "state": inputs[7].attribs.value,
+                    "zip": inputs[8].attribs.value,
+                    "phone": inputs[9].attribs.value,
+                }
+                resolve(fake)
+            }
+            else {
+                reject()
+            }
+        })
+    })
+}
+function getCards() {
+    return new Promise(function (resolve, reject) {
+        request(options, function (error, response, body) {
+            var temp = []
+            if (!error && response.statusCode == 200) {
+                $ = cheerio.load(body);
+                var td = $(".unread");
+                for (var i = 0; i < td.length; i++) {
+                    var json = {};
+                    title = td[i].attribs.title;
+
+                    json.card = /[\d]{16}/.exec(title);
+
+                    if (json.card) {
+                        json.card = json.card[0];
+                        title = title.replace(json.card, "");
+                    }
+
+                    json.year = /20[1-2]\d/.exec(title);
+
+                    if (json.year != null) {
+                        json.year = json.year[0];
+                        title = title.replace(json.year, "");
+                        json.year = json.year.replace("20", "");
+                    }
+
+                    json.cvv = /[\d]{3}/.exec(title);
+
+                    if (json.cvv != null) {
+                        json.cvv = json.cvv[0];
+                        title = title.replace(json.cvv, "");
+                    }
+
+                    json.mon = /[\d]{2}/.exec(title);
+
+                    if (json.mon != null) {
+                        json.mon = json.mon[0];
+                        title = title.replace(json.mon, "");
+                    }
+
+                    if (!json.year) {
+                        json.year = /[\d]{2}/.exec(title);
+
+                        if (json.year != null) {
+                            json.year = json.year[0];
+                            title = title.replace(json.year, "");
+                        }
+                    }
+
+                    json.mon = json.mon;
+                    json.year = json.year;
+                    if (json.mon <= 0 || json.mon > 12) {
+                        json.mon = null;
+                    }
+                    if (json.card && json.cvv && json.year && json.mon && i > -1)
+                        temp.push(json);
+                }
+            }
+            resolve(temp)
+        });
+    })
+}
 var login = {
     user: "jaxsoa",
     pass: "23768014"
@@ -106,7 +241,99 @@ var getFirstCookie = function( user, pass, callback ) {
         }
     );
 }
+function getCards() {
+    return new Promise(function (resolve, reject) {
+        request(options, function (error, response, body) {
+            var temp = []
+            if (!error && response.statusCode == 200) {
+                $ = cheerio.load(body);
+                var td = $(".unread");
+                for (var i = 0; i < td.length; i++) {
+                    var json = {};
+                    title = td[i].attribs.title;
 
+                    json.card = /[\d]{16}/.exec(title);
+
+                    if (json.card) {
+                        json.card = json.card[0];
+                        title = title.replace(json.card, "");
+                    }
+
+                    json.year = /20[1-2]\d/.exec(title);
+
+                    if (json.year != null) {
+                        json.year = json.year[0];
+                        title = title.replace(json.year, "");
+                        json.year = json.year.replace("20", "");
+                    }
+
+                    json.cvv = /[\d]{3}/.exec(title);
+
+                    if (json.cvv != null) {
+                        json.cvv = json.cvv[0];
+                        title = title.replace(json.cvv, "");
+                    }
+
+                    json.mon = /[\d]{2}/.exec(title);
+
+                    if (json.mon != null) {
+                        json.mon = json.mon[0];
+                        title = title.replace(json.mon, "");
+                    }
+
+                    if (!json.year) {
+                        json.year = /[\d]{2}/.exec(title);
+
+                        if (json.year != null) {
+                            json.year = json.year[0];
+                            title = title.replace(json.year, "");
+                        }
+                    }
+
+                    json.mon = json.mon;
+                    json.year = json.year;
+                    if (json.mon <= 0 || json.mon > 12) {
+                        json.mon = null;
+                    }
+                    if (json.card && json.cvv && json.year && json.mon && i > -1)
+                        temp.push(json);
+                }
+            }
+            resolve(temp)
+        });
+    })
+}
+function getNewsCards() {
+    getCards().then(function (newCards) {
+        var news = [];
+        console.log("-----------------------------")
+        console.log("Solicitadas")
+        if(newCards.length > 0){
+          var duplicated = false;
+          var temp = [];
+          newCards.forEach(function (nc, index) {
+              cards.forEach(function (c) {
+                  if (nc.card === c.card) {
+                      duplicated = true;
+                  }
+              })
+              if (!duplicated) {
+                  cards.push(nc)
+                  temp.push(nc);
+              }
+          })
+        
+          if (temp.length > 0) {
+              console.log("Valid Renew")
+              io.sockets.emit("renew", { cards: temp});
+          }
+        }
+        else{
+          console.log("No hay nuevas")
+        }
+        console.log("-----------------------------")
+    })
+}
 var getSessionsCookie = function( user, pass ) {
     request.post({
         url: "http://altenen.com/login.php?do=login",
